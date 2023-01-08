@@ -5,43 +5,40 @@ const messageForm = document.querySelector("#message");
 //${window.location.host} = 어디에 인터넷 주소가 위치해 있는지 알려주는 코드
 const socket = new WebSocket(`ws://${window.location.host}`);
 
-function makeMessage(type, payload){
-    const msg = {type, payload};
-    return JSON.stringify(msg);
+function makeMessage(type, payload) {
+  const msg = { type, payload };
+  return JSON.stringify(msg);
 }
 
 //socket이 connection을 open했을때 발생
-socket.addEventListener("open", ()=>{
-    console.log("connected to Server 😗")
-})
+socket.addEventListener("open", () => {
+  console.log("connected to Server 😗");
+});
 
 //메세지를 받을 때마다 내용을 출력하는 message
-socket.addEventListener("message",(message)=>{
-    const li = document.createElement("li");
-    li.innerText = message.data;
-    messageList.append(li);
-})
+socket.addEventListener("message", (message) => {
+  const li = document.createElement("li");
+  li.innerText = message.data;
+  messageList.append(li);
+});
 
 //서버가 오프라인 될때 발생하는 코드
-socket.addEventListener("close",()=>{
-    console.log("Disconnected from Server 😴")
-})
+socket.addEventListener("close", () => {
+  console.log("Disconnected from Server 😴");
+});
 
-function handleSubmit(events){
-    events.preventDefault();
-    const input = messageForm.querySelector("input");
-    socket.send(input.value);
-    input.value = "";
+function handleSubmit(events) {
+  events.preventDefault();
+  const input = messageForm.querySelector("input");
+  socket.send(makeMessage("new_Message", input.value));
+  input.value = "";
 }
 
-function handleNickSubmit(events){
-    events.preventDefault();
-    const input = nickForm.querySelector("input");
-    socket.send({
-        type:"nickname",
-        payload:input.value,
-    });
+function handleNickSubmit(events) {
+  events.preventDefault();
+  const input = nickForm.querySelector("input");
+  socket.send(makeMessage("nickname", input.value));
 }
 
-messageForm.addEventListener("submit",handleSubmit);
+messageForm.addEventListener("submit", handleSubmit);
 nickForm.addEventListener("submit", handleNickSubmit);
